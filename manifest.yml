@@ -1,6 +1,6 @@
 ---
 applications:
-- name: gatling-results
-  random-route: true
+- name: gatling-report
   buildpacks:
   - staticfile_buildpack
+  memory: 32m

@@ -11,7 +11,7 @@ resources:
 - name: repo
   type: git
   source:
-    uri: https://github.com/jacopen/concourse-gatling-pipeline.git
+    uri: https://github.com/making/concourse-gatling-pipeline.git
 jobs:
 - name: gatling
   public: true
