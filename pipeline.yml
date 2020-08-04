@@ -18,7 +18,7 @@ jobs:
   plan:
   - get: repo
   - task: run-gatling
-    config:
+    config: &gatling-config
       platform: linux
       image_resource:
         type: docker-image
@@ -35,15 +35,30 @@ jobs:
         args:
         - -c
         - |
-          set -e
+          set -ex
           cp repo/user-files/simulations/* /opt/gatling/user-files/simulations/
-          gatling.sh -rd "run" -s computerdatabase.CFSimulation
-          WORKING_DIR=$(pwd)
-          cd /opt/gatling/results/*
-          cp -R * $WORKING_DIR/reports/
-  - put: cf
-    params:
-      manifest: repo/manifest.yml
-      path: reports
-      current_app_name: gatling-results
+          gatling.sh -rd "run" -s computerdatabase.CFSimulation -rf reports/
+  ensure:
+    do:
+    - task: report-gatling
+      config:
+        <<: *gatling-config
+        inputs:
+        - name: reports
+        run:
+          path: bash
+          args:
+          - -c
+          - |
+            set -ex
+            cp -R reports/* /opt/gatling/results/
+            gatling.sh -ro /opt/gatling/results/*
+            WORKING_DIR=$(pwd)
+            cd /opt/gatling/results/*
+            cp -R * $WORKING_DIR/reports/
+    - put: cf
+      params:
+        manifest: repo/manifest.yml
+        path: reports
+        current_app_name: gatling-report
 
