@@ -17,7 +17,7 @@ class CFSimulation extends Simulation {
   val scn = scenario("CFSimulation")
     .exec(http("concourse")
       .get("/"))
-    .pause(5)
+    .pause(5).exitHereIfFailed
 
   val requests=Integer.getInteger("requests", 1)
   val duration=Integer.getInteger("duration", 1)
